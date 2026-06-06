@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/store/auth";
 import { API_URL } from "@/lib/env";
 
@@ -13,6 +13,23 @@ interface Report {
   committed: boolean;
 }
 
+interface HistoryRow {
+  id: string;
+  source: "url" | "file" | string;
+  url: string | null;
+  fileName: string | null;
+  parsed: number;
+  toCreate: number;
+  toUpdate: number;
+  toDelete: number;
+  categoriesCreated: number;
+  errorsCount: number;
+  errors: Array<{ line: number; message: string }> | null;
+  committed: boolean;
+  durationMs: number | null;
+  createdAt: string;
+}
+
 type Mode = "url" | "file";
 
 export default function AdminImport() {
@@ -24,6 +41,23 @@ export default function AdminImport() {
   const [report, setReport] = useState<Report | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<HistoryRow[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  const loadHistory = useCallback(async () => {
+    if (!token) return;
+    setHistoryLoading(true);
+    try {
+      const r = await fetch(`${API_URL}/admin/import/history?limit=20`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (r.ok) setHistory(await r.json());
+    } catch {
+      // ignore
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [token]);
 
   useEffect(() => {
     if (!token) return;
@@ -36,7 +70,8 @@ export default function AdminImport() {
         setUrl(d.url);
       })
       .catch(() => {});
-  }, [token]);
+    loadHistory();
+  }, [token, loadHistory]);
 
   async function sendFile(dryRun: boolean) {
     if (!file) return;
@@ -57,7 +92,9 @@ export default function AdminImport() {
         const b = await res.json().catch(() => ({}));
         throw new Error(b.message ?? "Помилка імпорту");
       }
-      setReport(await res.json());
+      const r: Report = await res.json();
+      setReport(r);
+      if (r.committed) loadHistory();
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -84,7 +121,9 @@ export default function AdminImport() {
         const b = await res.json().catch(() => ({}));
         throw new Error(b.message ?? "Помилка імпорту");
       }
-      setReport(await res.json());
+      const r: Report = await res.json();
+      setReport(r);
+      if (r.committed) loadHistory();
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -209,6 +248,87 @@ export default function AdminImport() {
           )}
         </div>
       )}
+
+      <div className="pt-4 border-t" style={{ borderColor: "var(--ab-border)" }}>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-lg">Історія синхронізацій</h2>
+          <button
+            type="button"
+            onClick={loadHistory}
+            disabled={historyLoading}
+            className="text-xs px-2 py-1 border rounded-sm disabled:opacity-50"
+            style={{ borderColor: "var(--ab-border)" }}
+          >
+            {historyLoading ? "…" : "Оновити"}
+          </button>
+        </div>
+        {history.length === 0 ? (
+          <p className="text-sm text-[color:var(--ab-muted)]">
+            Немає завершених імпортів.
+          </p>
+        ) : (
+          <table className="w-full text-xs border" style={{ borderColor: "var(--ab-border)" }}>
+            <thead style={{ background: "var(--ab-bg-alt)" }}>
+              <tr className="text-left">
+                <th className="p-2">Час</th>
+                <th className="p-2">Джерело</th>
+                <th className="p-2">Розпарс.</th>
+                <th className="p-2">Створ.</th>
+                <th className="p-2">Онов.</th>
+                <th className="p-2">Видал.</th>
+                <th className="p-2">Категор.</th>
+                <th className="p-2">Помилки</th>
+                <th className="p-2">Тривал.</th>
+              </tr>
+            </thead>
+            <tbody>
+              {history.map((h) => (
+                <tr key={h.id} className="border-t align-top" style={{ borderColor: "var(--ab-border)" }}>
+                  <td className="p-2">{new Date(h.createdAt).toLocaleString("uk")}</td>
+                  <td className="p-2">
+                    {h.source === "file" ? (
+                      <span title={h.fileName ?? ""}>📄 {h.fileName ?? "файл"}</span>
+                    ) : (
+                      <span title={h.url ?? ""}>🔗 URL</span>
+                    )}
+                  </td>
+                  <td className="p-2">{h.parsed}</td>
+                  <td className="p-2 text-green-700">+{h.toCreate}</td>
+                  <td className="p-2 text-sky-700">~{h.toUpdate}</td>
+                  <td
+                    className="p-2"
+                    style={{ color: h.toDelete > 0 ? "#c0392b" : undefined }}
+                  >
+                    −{h.toDelete}
+                  </td>
+                  <td className="p-2">+{h.categoriesCreated}</td>
+                  <td className="p-2">
+                    {h.errorsCount > 0 ? (
+                      <details>
+                        <summary style={{ color: "#c0392b" }}>{h.errorsCount}</summary>
+                        <ul className="ml-3 list-disc">
+                          {(h.errors ?? []).slice(0, 20).map((e, i) => (
+                            <li key={i}>
+                              {e.line}: {e.message}
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                    ) : (
+                      <span className="text-slate-500">0</span>
+                    )}
+                  </td>
+                  <td className="p-2">
+                    {h.durationMs != null
+                      ? `${(h.durationMs / 1000).toFixed(1)} с`
+                      : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }
