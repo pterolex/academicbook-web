@@ -4,6 +4,8 @@ import { SidebarFirst } from "@/components/SidebarFirst";
 import { SidebarSecond } from "@/components/SidebarSecond";
 import { Footer } from "@/components/Footer";
 
+export const dynamic = "force-dynamic";
+
 export default function StorefrontLayout({
   children,
 }: {
