@@ -1,0 +1,423 @@
+@import "tailwindcss";
+
+:root {
+  --ab-bg: #ffffff;
+  --ab-text: #59544a;
+  --ab-muted: #8b8881;
+  --ab-link: #9a6f13;
+  --ab-link-hover: #8f680b;
+  --ab-page: #ffffff;
+  --ab-block-bg: #e7e3df;
+  --ab-block-border: #e7e3df;
+  --ab-block-h2-border: #ada585;
+  --ab-nav-border: #e5dec7;
+  --ab-page-title-bg: #8e8367;
+  --ab-page-title-fg: #efe8cd;
+  --ab-footer-bg: #f0f6f7;
+  --ab-footer-fg: #59544a;
+  --ab-node-bg: #fefefe;
+  --ab-node-border: #e0ddd6;
+  --ab-h2-border: #c3b898;
+  --ab-page-max: 1100px;
+
+  /* aliases for legacy refs in pages */
+  --ab-paper: var(--ab-page);
+  --ab-border: var(--ab-node-border);
+  --ab-bg-alt: var(--ab-block-bg);
+  --ab-accent: #8e8367;
+}
+
+/* Inline buttons that set background via style — ensure baseline shape */
+button[style*="--ab-accent"],
+button[style*="background: var(--ab-accent)"] {
+  background-color: #5a4a2a !important;
+  border: 1px solid #3d3115 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.2px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 1px 1px rgba(0, 0, 0, 0.12);
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+}
+
+/* Primary CTA hover (brown accent buttons + .ab-btn-primary) */
+button[style*="--ab-accent"]:hover:not([disabled]),
+button[style*="background: var(--ab-accent)"]:hover:not([disabled]),
+.ab-btn-primary:hover {
+  background-color: #c0392b !important;
+  border-color: #8a2820 !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 2px 6px rgba(0, 0, 0, 0.25);
+}
+button[style*="--ab-accent"]:active:not([disabled]),
+button[style*="background: var(--ab-accent)"]:active:not([disabled]) {
+  background-color: #962e22 !important;
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+button[disabled],
+button[style*="--ab-accent"][disabled],
+button[style*="background: var(--ab-accent)"][disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Outline buttons — border + transparent bg (cart "продовжити покупки",
+   admin refresh, import "пробний запуск", links with .border class) */
+.ab-content button:not([style*="--ab-accent"]):not([style*="background: var(--ab-accent)"]),
+.ab-content a.border,
+button.border,
+a.border {
+  transition: background-color 0.12s ease, border-color 0.12s ease,
+    color 0.12s ease;
+}
+.ab-content button:not([style*="--ab-accent"]):not([style*="background: var(--ab-accent)"]):hover:not([disabled]),
+button.border:hover:not([disabled]),
+a.border:hover {
+  background-color: #f3efe5;
+  border-color: #c3b898;
+  color: #59544a;
+  text-decoration: none;
+}
+
+/* Reusable hover for the .ab-btn helpers */
+.ab-btn {
+  transition: background-color 0.12s ease, border-color 0.12s ease,
+    color 0.12s ease;
+}
+
+@theme inline {
+  --color-background: var(--ab-bg);
+  --color-foreground: var(--ab-text);
+}
+
+html,
+body {
+  background: var(--ab-bg);
+  color: var(--ab-text);
+}
+
+body {
+  font-family: Georgia, "Palatino Linotype", "Book Antiqua", "URW Palladio L",
+    Baskerville, serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+a {
+  color: var(--ab-link);
+  text-decoration: none;
+}
+a:hover,
+a:focus,
+a:active {
+  color: var(--ab-link-hover);
+  text-decoration: underline;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  color: var(--ab-text);
+  line-height: 1.2;
+}
+h1 {
+  font-size: 1.4em;
+  margin: 0 0 10px;
+}
+h2 {
+  font-size: 1.3em;
+  margin: 0 0 6px;
+}
+
+/* ============ Storefront shell ============ */
+
+.ab-root {
+  background: var(--ab-bg);
+}
+
+#page-wrapper {
+  width: 90%;
+  max-width: var(--ab-page-max);
+  margin: 15px auto;
+  background: var(--ab-bg);
+}
+
+#page {
+  background: var(--ab-page);
+  padding: 0;
+}
+
+.ab-section {
+  padding: 0 8px;
+}
+
+/* User strip (NEW — cart/auth) */
+.ab-userstrip {
+  background: var(--ab-page);
+  border-bottom: 1px solid var(--ab-nav-border);
+  font-size: 0.85em;
+  padding: 4px 10px;
+}
+.ab-userstrip a,
+.ab-userstrip button {
+  color: var(--ab-link);
+}
+
+/* Header (logo block) */
+.ab-header {
+  background: var(--ab-page);
+  border: 0;
+  text-align: center;
+  padding: 9px 4px;
+  overflow: hidden;
+}
+#logo {
+  display: inline-block;
+}
+#logo img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Top navigation — Drupal #navigation block, items separated by border-right */
+#navigation {
+  margin: 0;
+  padding: 4px 0 4px 4px;
+  border-bottom: 1px solid var(--ab-nav-border);
+  overflow: hidden;
+}
+.ab-main-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+.ab-main-menu li {
+  margin: 0;
+  padding: 2px 4px 2px 0;
+  border-right: 1px solid var(--ab-nav-border);
+  line-height: 1.2em;
+}
+.ab-main-menu li:last-child {
+  border-right: none;
+}
+.ab-main-menu li a {
+  padding: 2px 8px;
+  font-size: 0.9em;
+  font-weight: normal;
+  color: var(--ab-link);
+  display: inline-block;
+}
+.ab-main-menu li a:hover {
+  background: #e9e6e2;
+}
+
+.ab-spacer {
+  height: 8px;
+}
+
+/* Main 3-column layout: sidebar-first | content | sidebar-second */
+.ab-main {
+  display: grid;
+  grid-template-columns: 25% 1fr 25%;
+  gap: 0;
+  padding: 8px;
+}
+.ab-main > #sidebar-first .section {
+  margin: 0 10px 0 0;
+}
+.ab-main > #sidebar-second .section {
+  margin: 0 0 0 10px;
+}
+@media (max-width: 900px) {
+  .ab-main {
+    grid-template-columns: 1fr;
+  }
+  .ab-main > #sidebar-first .section,
+  .ab-main > #sidebar-second .section {
+    margin: 0;
+  }
+}
+
+/* Sidebars */
+#sidebar-first,
+#sidebar-second {
+  font-size: 0.9em;
+}
+.sidebar .block {
+  background: var(--ab-block-bg);
+  border: 1px solid var(--ab-block-border);
+  padding: 5px 10px;
+  margin-bottom: 10px;
+  font-size: 1em;
+}
+.sidebar h2 {
+  background: transparent;
+  border-bottom: 1px solid var(--ab-block-h2-border);
+  margin: 4px 0 2px;
+  padding: 2px 0;
+  font-size: 1.1em;
+  color: var(--ab-text);
+}
+.sidebar .block .content,
+.sidebar .block-content {
+  padding: 5px 2px;
+}
+.sidebar a {
+  color: #985901;
+}
+.sidebar ul.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sidebar ul.menu li {
+  margin: 0;
+  padding: 0;
+  line-height: 1.6em;
+}
+.sidebar ul.menu li.leaf {
+  list-style: square inside;
+  margin-left: 1.2em;
+}
+.sidebar ul.menu li a {
+  display: inline;
+  padding: 0;
+}
+
+.sidebar button {
+  transition: color 0.12s ease, background-color 0.12s ease;
+}
+.sidebar button:hover {
+  color: #c0392b;
+}
+
+/* Right sidebar — block-block-13 promo style */
+#block-block-13 {
+  text-align: center;
+}
+#block-block-13 .promo-title {
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
+}
+#block-block-13 .promo-sub {
+  color: #555;
+  font-style: italic;
+  font-size: 0.9em;
+  margin: 6px 0;
+}
+
+/* Content area */
+.ab-content,
+#content {
+  min-width: 0;
+}
+#page-title {
+  background: var(--ab-page-title-bg);
+  color: var(--ab-page-title-fg);
+  padding: 4px 8px;
+  font-size: 1.3em;
+  margin-bottom: 10px;
+}
+.node {
+  background: var(--ab-node-bg);
+  border: 1px solid var(--ab-node-border);
+  padding: 15px 12px 10px 14px;
+  margin-bottom: 10px;
+}
+
+.ab-muted {
+  color: var(--ab-muted);
+}
+
+/* Footer — pale blue-gray */
+#footer-wrapper,
+.ab-footer {
+  background: var(--ab-footer-bg);
+  color: var(--ab-footer-fg);
+  text-align: center;
+  padding: 10px;
+  font-size: 0.9em;
+  margin-top: 10px;
+}
+.ab-footer a {
+  color: #c49821;
+}
+.ab-footer p {
+  margin: 4px 0;
+}
+
+/* Buttons used inside storefront */
+.ab-btn {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #fff;
+  color: var(--ab-text);
+  border: solid 1px #888;
+  border-radius: 2px;
+  font-family: inherit;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+.ab-btn:hover {
+  text-decoration: none;
+  color: #111;
+  border-color: #666;
+  background: #f5f5f5;
+}
+.ab-btn-primary {
+  background: #8e8367;
+  color: #efe8cd;
+  border-color: #8e8367;
+}
+.ab-btn-primary:hover {
+  background: #7a705a;
+  color: #fff;
+}
+
+/* ============ Admin overrides ============ */
+
+.admin-shell,
+.admin-shell * {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif !important;
+}
+.admin-shell h1,
+.admin-shell h2,
+.admin-shell h3 {
+  color: #0f172a;
+  border: 0;
+}
+.admin-shell a {
+  color: #2563eb;
+  transition: color 0.12s ease, background-color 0.12s ease;
+}
+.admin-shell aside a,
+.admin-shell aside button {
+  transition: color 0.12s ease, background-color 0.12s ease;
+}
+.admin-shell aside a:hover,
+.admin-shell aside button:hover {
+  color: #ffffff !important;
+}
+.admin-shell main button,
+.admin-shell main a.border {
+  transition: background-color 0.12s ease, border-color 0.12s ease,
+    color 0.12s ease;
+}
+.admin-shell main button:not([style*="--ab-accent"]):not([style*="background: var(--ab-accent)"]):hover:not([disabled]) {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+}
