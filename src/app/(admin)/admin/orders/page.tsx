@@ -66,7 +66,7 @@ export default function AdminOrders() {
         <tbody>
           {rows.map((o) => (
             <tr key={o.id} className="border-t align-top" style={{ borderColor: "var(--ab-border)" }}>
-              <td className="p-2 font-mono">{o.code.slice(-6)}</td>
+              <td className="p-2 font-mono">{o.code}</td>
               <td className="p-2">
                 <div>{o.name}</div>
                 <div className="text-xs text-[color:var(--ab-muted)]">{o.email} · {o.phone}</div>

@@ -161,7 +161,7 @@ export default function AdminHome() {
               <tbody>
                 {stats.newOrders.map((o) => (
                   <tr key={o.id} className="border-t" style={{ borderColor: "#e2e8f0" }}>
-                    <td className="py-2 font-mono text-xs">{o.code.slice(-6)}</td>
+                    <td className="py-2 font-mono text-xs">{o.code}</td>
                     <td>{o.name}</td>
                     <td className="text-xs text-slate-500">
                       <div>{o.email}</div>
