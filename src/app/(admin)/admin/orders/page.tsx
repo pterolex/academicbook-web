@@ -15,6 +15,7 @@ export default function AdminOrders() {
           <tr className="text-left">
             <th className="p-2">№</th>
             <th className="p-2">Клієнт</th>
+            <th className="p-2">Доставка</th>
             <th className="p-2">Сума</th>
             <th className="p-2">Дата</th>
             <th className="p-2">Статус</th>
@@ -32,6 +33,18 @@ export default function AdminOrders() {
                     <li key={idx}>• {i.titleUa} × {i.qty}</li>
                   ))}
                 </ul>
+              </td>
+              <td className="p-2 text-xs">
+                {o.deliveryType === "novaposhta" ? (
+                  <div>
+                    <div>Нова пошта</div>
+                    <div className="text-[color:var(--ab-muted)]">
+                      {o.city}, відділення {o.warehouse}
+                    </div>
+                  </div>
+                ) : (
+                  <div>Самовивоз</div>
+                )}
               </td>
               <td className="p-2">{Number(o.subtotal).toFixed(2)} ₴</td>
               <td className="p-2 text-xs">{new Date(o.createdAt).toLocaleString("uk")}</td>

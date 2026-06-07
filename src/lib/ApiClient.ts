@@ -64,6 +64,9 @@ export interface AdminOrder {
   name: string;
   email: string;
   phone: string;
+  deliveryType: DeliveryType;
+  city: string | null;
+  warehouse: string | null;
   subtotal: string;
   status: OrderStatus;
   createdAt: string;
@@ -79,6 +82,20 @@ export interface AdminBook {
   price: string;
   stock: number;
   category?: { nameUa: string };
+}
+
+export interface AdminBooksPage {
+  items: AdminBook[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface AdminCategory {
+  id: string;
+  slug: string;
+  nameUa: string;
+  bookCount: number;
 }
 
 export interface DateRange {
@@ -218,8 +235,10 @@ export class ApiClient {
         method: "PATCH",
         json: { status },
       }),
-    books: (q?: string) =>
-      this.request<AdminBook[]>(`/admin/books${q ? `?${qs({ q })}` : ""}`),
+    books: (q?: string, page?: number) =>
+      this.request<AdminBooksPage>(`/admin/books?${qs({ q, page })}`),
+    categories: () =>
+      this.request<AdminCategory[]>("/admin/categories"),
     importSource: () =>
       this.request<{ url: string }>("/admin/import/source"),
     importHistory: (limit = 20) =>
