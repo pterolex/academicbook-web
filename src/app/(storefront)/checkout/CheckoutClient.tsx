@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { useAuth } from "@/store/auth";
 import { useCart } from "@/store/cart";
 import { useApi } from "@/hooks/useApi";
@@ -56,6 +57,7 @@ export function CheckoutClient() {
   const user = useAuth((s) => s.user);
   const api = useApi();
   const router = useRouter();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   if (items.length === 0) {
     return (
@@ -84,6 +86,9 @@ export function CheckoutClient() {
       onSubmit={async (values, helpers) => {
         helpers.setStatus(null);
         try {
+          const recaptchaToken = executeRecaptcha
+            ? await executeRecaptcha("checkout")
+            : "";
           const order = await api.orders.create({
             name: values.name,
             email: values.email,
@@ -99,6 +104,7 @@ export function CheckoutClient() {
             createAccountPassword:
               !user && values.createAccount ? values.password : undefined,
             items: items.map((i) => ({ code: i.code, qty: i.qty })),
+            recaptchaToken,
           });
           clear();
           router.push(`/checkout/success?code=${order.code}`);

@@ -19,6 +19,7 @@ export interface AuthResult {
 export interface LoginInput {
   email: string;
   password: string;
+  recaptchaToken: string;
 }
 
 export interface RegisterInput {
@@ -26,6 +27,7 @@ export interface RegisterInput {
   email: string;
   phone: string;
   password: string;
+  recaptchaToken: string;
 }
 
 export type DeliveryType = "pickup" | "novaposhta";
@@ -40,6 +42,7 @@ export interface OrderInput {
   notes?: string;
   createAccountPassword?: string;
   items: Array<{ code: string; qty: number }>;
+  recaptchaToken: string;
 }
 
 export interface MyOrder {

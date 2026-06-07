@@ -7,6 +7,7 @@ import { Breadcrumb } from "@/components/Breadcrumb";
 import { SidebarFirst } from "@/components/SidebarFirst";
 import { SidebarSecond } from "@/components/SidebarSecond";
 import { Footer } from "@/components/Footer";
+import { RecaptchaProvider } from "@/components/RecaptchaProvider";
 
 // Public storefront is cacheable; revalidate hourly (ISR).
 // Cart/checkout/account pages opt back into force-dynamic individually.
@@ -18,6 +19,7 @@ export default function StorefrontLayout({
   children: React.ReactNode;
 }) {
   return (
+    <RecaptchaProvider>
     <div className="two-sidebars ab-root">
       <AdminToolbar />
       <div id="page-wrapper">
@@ -43,5 +45,6 @@ export default function StorefrontLayout({
         </div>
       </div>
     </div>
+    </RecaptchaProvider>
   );
 }

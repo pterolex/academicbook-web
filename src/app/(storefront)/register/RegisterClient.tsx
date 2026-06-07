@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { useAuth } from "@/store/auth";
 import { useApi } from "@/hooks/useApi";
 import { FormField } from "@/components/FormField";
@@ -25,6 +26,7 @@ export function RegisterClient() {
   const setAuth = useAuth((s) => s.set);
   const api = useApi();
   const router = useRouter();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   return (
     <Formik<Values>
@@ -33,7 +35,13 @@ export function RegisterClient() {
       onSubmit={async (values, helpers) => {
         helpers.setStatus(null);
         try {
-          const { accessToken, user } = await api.auth.register(values);
+          const recaptchaToken = executeRecaptcha
+            ? await executeRecaptcha("register")
+            : "";
+          const { accessToken, user } = await api.auth.register({
+            ...values,
+            recaptchaToken,
+          });
           setAuth({ accessToken, user });
           router.push("/account");
         } catch (e) {
