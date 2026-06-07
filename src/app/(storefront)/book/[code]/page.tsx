@@ -1,7 +1,51 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { api } from "@/lib/api";
+import { api, type Book } from "@/lib/api";
+import { SITE_URL } from "@/lib/env";
 import { AddToCartButton } from "@/components/AddToCartButton";
+
+async function getBook(code: string): Promise<Book | null> {
+  try {
+    return await api.bookByCode(code);
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ code: string }>;
+}): Promise<Metadata> {
+  const { code } = await params;
+  const book = await getBook(code);
+  if (!book) return { title: "Книгу не знайдено" };
+
+  const titleParts = [book.titleUa, book.author].filter(Boolean);
+  const descParts = [
+    book.author,
+    book.titleUa,
+    book.publisher,
+    book.city,
+    book.year ? String(book.year) : null,
+  ].filter(Boolean);
+  const description = `${descParts.join(", ")}. Купити в магазині «Академкнига», Київ.`;
+  const canonical = `/book/${encodeURIComponent(book.code)}`;
+
+  return {
+    title: titleParts.join(" — "),
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      title: book.titleUa,
+      description,
+      url: `${SITE_URL}${canonical}`,
+      images: book.coverUrl ? [book.coverUrl] : undefined,
+    },
+  };
+}
 
 export default async function BookPage({
   params,
@@ -9,16 +53,66 @@ export default async function BookPage({
   params: Promise<{ code: string }>;
 }) {
   const { code } = await params;
-  let book;
-  try {
-    book = await api.bookByCode(code);
-  } catch {
-    notFound();
-  }
+  const book = await getBook(code);
   if (!book) notFound();
+
+  const canonical = `${SITE_URL}/book/${encodeURIComponent(book.code)}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    name: book.titleUa,
+    ...(book.author ? { author: { "@type": "Person", name: book.author } } : {}),
+    ...(book.publisher ? { publisher: book.publisher } : {}),
+    ...(book.year ? { datePublished: String(book.year) } : {}),
+    ...(book.pages ? { numberOfPages: book.pages } : {}),
+    inLanguage: "uk",
+    url: canonical,
+    ...(book.coverUrl ? { image: book.coverUrl } : {}),
+    offers: {
+      "@type": "Offer",
+      price: String(book.price),
+      priceCurrency: "UAH",
+      availability:
+        book.stock > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+      url: canonical,
+    },
+  };
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Головна", item: SITE_URL },
+      ...(book.category
+        ? [
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: book.category.nameUa,
+              item: `${SITE_URL}/c/${book.category.slug}`,
+            },
+          ]
+        : []),
+      {
+        "@type": "ListItem",
+        position: book.category ? 3 : 2,
+        name: book.titleUa,
+        item: canonical,
+      },
+    ],
+  };
 
   return (
     <article className="space-y-3">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
       <div className="text-sm">
         <Link href="/">Головна</Link>
         {book.category && (

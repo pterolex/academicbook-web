@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { BookCard } from "@/components/BookCard";
@@ -7,19 +8,47 @@ interface Props {
   searchParams: Promise<{ page?: string; sort?: string; q?: string }>;
 }
 
+async function categoryName(slug: string): Promise<string | null> {
+  try {
+    const cats = await api.categories();
+    return cats.find((c) => c.slug === slug)?.nameUa ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const name = await categoryName(slug);
+  const title = name ? `${name} — книги` : "Категорія";
+  return {
+    title,
+    description: `${name ?? "Книги"} — каталог видань у магазині «Академкнига», Київ.`,
+    // Canonical points at the bare category so ?page/?sort variants don't fragment ranking.
+    alternates: { canonical: `/c/${slug}` },
+  };
+}
+
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const sp = await searchParams;
-  const data = await api.books({
-    category: slug,
-    page: sp.page,
-    sort: sp.sort,
-    q: sp.q,
-  });
+  const [data, name] = await Promise.all([
+    api.books({
+      category: slug,
+      page: sp.page,
+      sort: sp.sort,
+      q: sp.q,
+    }),
+    categoryName(slug),
+  ]);
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl">Категорія: {slug}</h1>
+      <h1 className="text-xl">{name ?? slug}</h1>
       <p className="text-sm text-[color:var(--ab-muted)]">
         Знайдено {data.total} книг
       </p>

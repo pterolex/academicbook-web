@@ -4,7 +4,9 @@ import { SidebarFirst } from "@/components/SidebarFirst";
 import { SidebarSecond } from "@/components/SidebarSecond";
 import { Footer } from "@/components/Footer";
 
-export const dynamic = "force-dynamic";
+// Public storefront is cacheable; revalidate hourly (ISR).
+// Cart/checkout/account pages opt back into force-dynamic individually.
+export const revalidate = 3600;
 
 export default function StorefrontLayout({
   children,

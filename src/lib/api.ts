@@ -85,4 +85,8 @@ export const api = {
     apiFetch<Book>(`/books/${encodeURIComponent(code)}`, {
       tags: [`book:${code}`],
     }),
+  bookSitemap: () =>
+    apiFetch<Array<{ code: string; updatedAt: string }>>("/books/sitemap", {
+      tags: ["books"],
+    }),
 };
