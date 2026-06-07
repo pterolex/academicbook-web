@@ -1,11 +1,20 @@
 "use client";
+import { useState } from "react";
 import { useAdminOrders } from "@/hooks/useAdminOrders";
-import type { OrderStatus } from "@/lib/ApiClient";
+import ConfirmModal from "@/components/ConfirmModal";
+import type { AdminOrder, OrderStatus } from "@/lib/ApiClient";
 
 const STATUSES: OrderStatus[] = ["NEW", "CONFIRMED", "SHIPPED", "DONE", "CANCELLED"];
 
 export default function AdminOrders() {
-  const { rows, busy, setStatus } = useAdminOrders();
+  const { rows, busy, setStatus, deleteOrder } = useAdminOrders();
+  const [pendingDelete, setPendingDelete] = useState<AdminOrder | null>(null);
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    await deleteOrder(pendingDelete.id);
+    setPendingDelete(null);
+  };
 
   return (
     <div className="space-y-3">
@@ -19,6 +28,7 @@ export default function AdminOrders() {
             <th className="p-2">Сума</th>
             <th className="p-2">Дата</th>
             <th className="p-2">Статус</th>
+            <th className="p-2"></th>
           </tr>
         </thead>
         <tbody>
@@ -63,11 +73,39 @@ export default function AdminOrders() {
                   ))}
                 </select>
               </td>
+              <td className="p-2">
+                <button
+                  type="button"
+                  onClick={() => setPendingDelete(o)}
+                  disabled={busy === o.id}
+                  className="border px-2 py-1 text-xs"
+                  style={{
+                    borderColor: "var(--ab-border)",
+                    color: "#c0392b",
+                    cursor: busy === o.id ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Видалити
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
       {rows.length === 0 && <p className="text-sm">Замовлень немає.</p>}
+
+      <ConfirmModal
+        open={pendingDelete !== null}
+        title="Видалити замовлення?"
+        message={
+          pendingDelete
+            ? `Замовлення №${pendingDelete.code} буде видалено назавжди. Цю дію не можна скасувати.`
+            : undefined
+        }
+        busy={pendingDelete ? busy === pendingDelete.id : false}
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 }

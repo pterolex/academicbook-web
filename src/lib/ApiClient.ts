@@ -295,6 +295,10 @@ export class ApiClient {
         method: "PATCH",
         json: { status },
       }),
+    deleteOrder: (id: string) =>
+      this.request<void>(`/admin/orders/${id}`, {
+        method: "DELETE",
+      }),
     books: (q?: string, page?: number) =>
       this.request<AdminBooksPage>(`/admin/books?${qs({ q, page })}`),
     categories: () =>

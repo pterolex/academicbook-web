@@ -32,5 +32,18 @@ export function useAdminOrders() {
     [api, reload],
   );
 
-  return { rows, busy, setStatus };
+  const deleteOrder = useCallback(
+    async (id: string) => {
+      setBusy(id);
+      try {
+        await api.admin.deleteOrder(id);
+        reload();
+      } finally {
+        setBusy(null);
+      }
+    },
+    [api, reload],
+  );
+
+  return { rows, busy, setStatus, deleteOrder };
 }
