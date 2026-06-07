@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: DESCRIPTION,
   },
-  twitter: { card: "summary" },
+  twitter: { card: "summary_large_image" },
 };
 
 const orgJsonLd = {
