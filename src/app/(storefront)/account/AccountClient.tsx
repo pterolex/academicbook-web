@@ -1,13 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/store/auth";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { useMyOrders } from "@/hooks/useMyOrders";
+import { useLogout } from "@/hooks/useLogout";
 
 export function AccountClient() {
   const user = useRequireAuth();
-  const clear = useAuth((s) => s.clear);
+  const logout = useLogout();
   const router = useRouter();
   const orders = useMyOrders();
 
@@ -18,8 +18,8 @@ export function AccountClient() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl">Кабінет: {user.name ?? user.email}</h1>
         <button
-          onClick={() => {
-            clear();
+          onClick={async () => {
+            await logout();
             router.push("/");
           }}
           className="text-sm border px-3 py-1"

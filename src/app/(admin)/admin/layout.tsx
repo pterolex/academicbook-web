@@ -1,8 +1,8 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@/store/auth";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { useLogout } from "@/hooks/useLogout";
 
 const NAV: Array<{ href: string; label: string }> = [
   { href: "/admin", label: "Огляд" },
@@ -18,7 +18,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const user = useRequireAuth({ role: "ADMIN" });
-  const clear = useAuth((s) => s.clear);
+  const logout = useLogout();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -77,8 +77,8 @@ export default function AdminLayout({
           </Link>
           <button
             type="button"
-            onClick={() => {
-              clear();
+            onClick={async () => {
+              await logout();
               router.push("/");
             }}
             className="text-slate-300 hover:text-white underline"

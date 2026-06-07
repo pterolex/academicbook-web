@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 import { useAuth } from "@/store/auth";
+import { useLogout } from "@/hooks/useLogout";
 
 export function SidebarAuth() {
   const user = useAuth((s) => s.user);
-  const clear = useAuth((s) => s.clear);
+  const logout = useLogout();
 
   return (
     <div id="block-block-auth" className="block block-block clearfix">
@@ -31,7 +32,7 @@ export function SidebarAuth() {
             <p style={{ marginTop: 6 }}>
               <button
                 type="button"
-                onClick={clear}
+                onClick={logout}
                 className="underline"
                 style={{
                   background: "transparent",

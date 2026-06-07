@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/store/auth";
+import { useLogout } from "@/hooks/useLogout";
 
 const MENU: Array<{ href: string; label: string }> = [
   { href: "/admin", label: "Панель" },
@@ -18,7 +19,7 @@ const SHORTCUTS: Array<{ href: string; label: string }> = [
 
 export function AdminToolbar() {
   const user = useAuth((s) => s.user);
-  const clear = useAuth((s) => s.clear);
+  const logout = useLogout();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -51,8 +52,8 @@ export function AdminToolbar() {
           </span>
           <button
             type="button"
-            onClick={() => {
-              clear();
+            onClick={async () => {
+              await logout();
               router.push("/");
             }}
           >

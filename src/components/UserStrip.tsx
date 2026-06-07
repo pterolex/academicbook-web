@@ -2,11 +2,12 @@
 import Link from "next/link";
 import { useCart } from "@/store/cart";
 import { useAuth } from "@/store/auth";
+import { useLogout } from "@/hooks/useLogout";
 
 export function UserStrip() {
   const count = useCart((s) => s.count());
   const user = useAuth((s) => s.user);
-  const clear = useAuth((s) => s.clear);
+  const logout = useLogout();
 
   return (
     <div className="ab-userstrip">
@@ -16,7 +17,7 @@ export function UserStrip() {
           <>
             <Link href="/account">{user.name ?? user.email}</Link>
             {user.role === "ADMIN" && <Link href="/admin">Адмін</Link>}
-            <button type="button" onClick={clear} className="underline">
+            <button type="button" onClick={logout} className="underline">
               Вийти
             </button>
           </>
