@@ -174,10 +174,30 @@ function qs(
   return sp.toString();
 }
 
-export class ApiClient {
-  constructor(private config: { baseUrl: string; token?: string | null }) {}
+export interface ApiClientConfig {
+  baseUrl: string;
+  token?: string | null;
+  // Called with the new access token after a successful silent refresh, so the
+  // caller can persist it (e.g. into the auth store). The client also updates
+  // its own token for retried/subsequent requests.
+  onTokenRefreshed?: (token: string) => void;
+  // Called when refresh fails (refresh cookie missing/expired) — the session is
+  // dead and the caller should clear auth state / redirect to login.
+  onAuthExpired?: () => void;
+}
 
-  private async request<T>(path: string, opts: RequestOpts = {}): Promise<T> {
+export class ApiClient {
+  // Dedupes concurrent refreshes: many requests can 401 at once, but only one
+  // POST /auth/refresh should run; the rest await the same promise.
+  private refreshPromise: Promise<string | null> | null = null;
+
+  constructor(private config: ApiClientConfig) {}
+
+  private async request<T>(
+    path: string,
+    opts: RequestOpts = {},
+    retry = true,
+  ): Promise<T> {
     const { json, body, headers, ...rest } = opts;
     const res = await fetch(`${this.config.baseUrl}${path}`, {
       ...rest,
@@ -193,6 +213,12 @@ export class ApiClient {
     });
 
     if (!res.ok) {
+      // Access token expired: silently refresh once, then retry the request.
+      // Skip auth endpoints to avoid a refresh→refresh loop.
+      if (res.status === 401 && retry && !path.startsWith("/auth/")) {
+        const newToken = await this.refreshToken();
+        if (newToken) return this.request<T>(path, opts, false);
+      }
       const respBody = await res.json().catch(() => null);
       const message =
         typeof respBody === "object" && respBody && "message" in respBody
@@ -207,6 +233,34 @@ export class ApiClient {
     return (await res.json()) as T;
   }
 
+  // Exchanges the httpOnly refresh cookie for a fresh access token. Returns the
+  // new token, or null if the session is no longer valid (triggers onAuthExpired).
+  private async refreshToken(): Promise<string | null> {
+    if (this.refreshPromise) return this.refreshPromise;
+    this.refreshPromise = (async () => {
+      try {
+        const res = await fetch(`${this.config.baseUrl}/auth/refresh`, {
+          method: "POST",
+          credentials: "include",
+        });
+        if (!res.ok) {
+          this.config.onAuthExpired?.();
+          return null;
+        }
+        const { accessToken } = (await res.json()) as { accessToken: string };
+        this.config.token = accessToken;
+        this.config.onTokenRefreshed?.(accessToken);
+        return accessToken;
+      } catch {
+        this.config.onAuthExpired?.();
+        return null;
+      } finally {
+        this.refreshPromise = null;
+      }
+    })();
+    return this.refreshPromise;
+  }
+
   auth = {
     login: (input: LoginInput) =>
       this.request<AuthResult>("/auth/login", { method: "POST", json: input }),
@@ -215,6 +269,12 @@ export class ApiClient {
         method: "POST",
         json: input,
       }),
+    refresh: () =>
+      this.request<{ accessToken: string }>("/auth/refresh", {
+        method: "POST",
+      }),
+    logout: () =>
+      this.request<void>("/auth/logout", { method: "POST" }),
   };
 
   orders = {
