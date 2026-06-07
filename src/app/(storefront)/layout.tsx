@@ -1,3 +1,4 @@
+import { AdminToolbar } from "@/components/AdminToolbar";
 import { Header } from "@/components/Header";
 import { TopNav } from "@/components/TopNav";
 import { SearchBox } from "@/components/SearchBox";
@@ -17,6 +18,7 @@ export default function StorefrontLayout({
 }) {
   return (
     <div className="two-sidebars ab-root">
+      <AdminToolbar />
       <div id="page-wrapper">
         <div id="page">
           <Header />

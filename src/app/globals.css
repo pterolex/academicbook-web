@@ -441,3 +441,89 @@ h2 {
   background-color: #e2e8f0;
   border-color: #94a3b8;
 }
+
+/* ============ Drupal-7 admin toolbar ============ */
+/* Sticky dark bar shown on every storefront page when an ADMIN is logged in. */
+.ab-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial,
+    sans-serif;
+  font-size: 12px;
+  line-height: 1;
+}
+.ab-toolbar-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: #2a2a2a;
+  background: linear-gradient(to bottom, #333 0%, #1f1f1f 100%);
+  color: #eee;
+  padding: 0 10px;
+  border-bottom: 1px solid #000;
+}
+.ab-toolbar-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+.ab-toolbar-menu li {
+  margin: 0;
+}
+.ab-toolbar-menu li a {
+  display: block;
+  padding: 9px 12px;
+  color: #ccc;
+  text-decoration: none;
+}
+.ab-toolbar-menu li a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  text-decoration: none;
+}
+.ab-toolbar-menu li a.ab-toolbar-active {
+  color: #fff;
+  background: #0074bd;
+}
+.ab-toolbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 4px;
+}
+.ab-toolbar-hello {
+  color: #999;
+}
+.ab-toolbar-user button {
+  background: none;
+  border: 0;
+  color: #ccc;
+  cursor: pointer;
+  font: inherit;
+  padding: 9px 4px;
+}
+.ab-toolbar-user button:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+.ab-toolbar-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  background: #e0e0d8;
+  background: linear-gradient(to bottom, #f0f0e8 0%, #dcdcd4 100%);
+  border-bottom: 1px solid #aaa;
+  padding: 6px 14px;
+}
+.ab-toolbar-shortcuts a {
+  color: #0074bd;
+  text-decoration: none;
+}
+.ab-toolbar-shortcuts a:hover {
+  text-decoration: underline;
+}
