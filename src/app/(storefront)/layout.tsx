@@ -1,5 +1,7 @@
 import { Header } from "@/components/Header";
 import { TopNav } from "@/components/TopNav";
+import { SearchBox } from "@/components/SearchBox";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { SidebarFirst } from "@/components/SidebarFirst";
 import { SidebarSecond } from "@/components/SidebarSecond";
 import { Footer } from "@/components/Footer";
@@ -19,6 +21,10 @@ export default function StorefrontLayout({
         <div id="page">
           <Header />
           <TopNav />
+          <div className="ab-section ab-searchbar">
+            <Breadcrumb />
+            <SearchBox />
+          </div>
           <div className="ab-spacer" />
           <div id="main-wrapper">
             <div id="main" className="ab-main">

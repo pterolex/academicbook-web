@@ -180,17 +180,25 @@ h2 {
   padding: 9px 4px;
   overflow: hidden;
 }
-.ab-header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+.ab-searchbar {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.ab-breadcrumb {
+  font-size: 0.85em;
+  color: var(--ab-muted);
+  margin-bottom: 6px;
+}
+.ab-breadcrumb a {
+  color: var(--ab-link);
+}
+.ab-breadcrumb-sep {
+  color: var(--ab-muted);
 }
 .ab-search {
-  flex: 1 1 280px;
+  width: 100%;
   max-width: 480px;
-  min-width: 200px;
+  margin-left: auto;
 }
 #logo {
   display: inline-block;
