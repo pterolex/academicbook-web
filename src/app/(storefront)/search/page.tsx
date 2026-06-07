@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
 import { api } from "@/lib/api";
+import { noindexMetadata } from "@/lib/seo";
 import { BookGrid } from "@/components/BookGrid";
 
-// Search result pages are thin/duplicate content — keep them out of the index
-// but let crawlers follow links through to the books they list.
-export const metadata: Metadata = {
-  title: "Пошук книг",
-  robots: { index: false, follow: true },
-};
+export const metadata: Metadata = noindexMetadata("Пошук книг");
 
 export default async function SearchPage({
   searchParams,

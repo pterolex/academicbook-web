@@ -1,6 +1,11 @@
-export const metadata = {
-  title: 'Про магазин Академкнига',
-};
+import { publicPageMetadata } from "@/lib/seo";
+
+export const metadata = publicPageMetadata({
+  title: "Про магазин Академкнига",
+  description:
+    "Про книжковий магазин «Академкнига № 7» у Києві: асортимент, букіністичний відділ, попереднє замовлення та пересилання книг.",
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (

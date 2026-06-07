@@ -1,9 +1,13 @@
 import { categorySlugMatching } from "@/lib/api";
+import { publicPageMetadata } from "@/lib/seo";
 import { CategoryHighlight } from "@/components/CategoryHighlight";
 
-export const metadata = {
+export const metadata = publicPageMetadata({
   title: "Фізико-математична література",
-};
+  description:
+    "Фізико-математична література, монографії, підручники, задачники та букіністичні наукові книги в магазині «Академкнига», Київ.",
+  path: "/physics-math",
+});
 
 export default async function PhysicsMathPage() {
   const slug = await categorySlugMatching(

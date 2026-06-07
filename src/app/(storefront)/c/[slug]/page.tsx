@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { publicPageMetadata } from "@/lib/seo";
 import { BookGrid } from "@/components/BookGrid";
 
 interface Props {
@@ -25,12 +26,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const name = await categoryName(slug);
   const title = name ? `${name} — книги` : "Категорія";
-  return {
+  return publicPageMetadata({
     title,
     description: `${name ?? "Книги"} — каталог видань у магазині «Академкнига», Київ.`,
     // Canonical points at the bare category so ?page/?sort variants don't fragment ranking.
-    alternates: { canonical: `/c/${slug}` },
-  };
+    path: `/c/${slug}`,
+  });
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {

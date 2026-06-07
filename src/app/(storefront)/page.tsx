@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { publicPageMetadata } from "@/lib/seo";
 import { BookGrid } from "@/components/BookGrid";
+
+export const metadata = publicPageMetadata({ path: "/" });
 
 export default async function HomePage() {
   let latest: Awaited<ReturnType<typeof api.books>> = {

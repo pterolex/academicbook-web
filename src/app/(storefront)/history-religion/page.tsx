@@ -1,9 +1,13 @@
 import { categorySlugMatching } from "@/lib/api";
+import { publicPageMetadata } from "@/lib/seo";
 import { CategoryHighlight } from "@/components/CategoryHighlight";
 
-export const metadata = {
+export const metadata = publicPageMetadata({
   title: "Історія, міфологія, релігія",
-};
+  description:
+    "Книги з історії, міфології та релігії в магазині «Академкнига», Київ: історія України, античність, Схід, релігієзнавство та інші напрями.",
+  path: "/history-religion",
+});
 
 export default async function HistoryReligionPage() {
   const slug = await categorySlugMatching((name) => /істор/i.test(name));

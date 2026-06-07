@@ -1,6 +1,11 @@
-export const metadata = {
-  title: 'Контакти',
-};
+import { publicPageMetadata } from "@/lib/seo";
+
+export const metadata = publicPageMetadata({
+  title: "Контакти",
+  description:
+    "Контакти книгарні «Академкнига № 7» у Києві: адреса, телефон, e-mail, мапа та години роботи.",
+  path: "/contacts",
+});
 
 const MAP_SRC =
   'https://maps.google.com.ua/maps?hl=ru&ie=UTF8&q=%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%BA%D0%BD%D0%B8%D0%B3%D0%B0&fb=1&gl=ua&hq=%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%BA%D0%BD%D0%B8%D0%B3%D0%B0&hnear=0x40d4cf4ee15a4505:0x764931d2170146fe,%D0%9A%D0%B8%D0%B5%D0%B2,+%D0%B3%D0%BE%D1%80%D0%BE%D0%B4+%D0%9A%D0%B8%D0%B5%D0%B2&cid=0,0,15112303229787819682&ll=50.454784,30.508179&spn=0.006295,0.006295&t=h&iwloc=A&output=embed';

@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { api, type Book } from "@/lib/api";
 import { SITE_URL } from "@/lib/env";
+import { publicPageMetadata } from "@/lib/seo";
 import { AddToCartButton } from "@/components/AddToCartButton";
 import { BreadcrumbTitleSetter } from "@/components/BreadcrumbTitleSetter";
 
 async function getBook(code: string): Promise<Book | null> {
   try {
     return await api.bookByCode(code);
-  } catch {
-    return null;
+  } catch (e) {
+    if ((e as Error & { status?: number }).status === 404) return null;
+    throw e;
   }
 }
 
@@ -33,18 +35,12 @@ export async function generateMetadata({
   const description = `${descParts.join(", ")}. Купити в магазині «Академкнига», Київ.`;
   const canonical = `/book/${encodeURIComponent(book.code)}`;
 
-  return {
+  return publicPageMetadata({
     title: titleParts.join(" — "),
     description,
-    alternates: { canonical },
-    openGraph: {
-      type: "website",
-      title: book.titleUa,
-      description,
-      url: `${SITE_URL}${canonical}`,
-      images: book.coverUrl ? [book.coverUrl] : undefined,
-    },
-  };
+    path: canonical,
+    images: book.coverUrl ? [book.coverUrl] : undefined,
+  });
 }
 
 export default async function BookPage({

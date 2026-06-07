@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/env";
+import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import "./globals.css";
-
-const SITE_NAME = 'Книжковий магазин "Академкнига" Київ';
-const DESCRIPTION =
-  "Книжковий магазин «Академкнига № 7», Київ. Близько 8000 видань, спеціалізація — фізико-математична література.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -13,16 +10,7 @@ export const metadata: Metadata = {
     default: SITE_NAME,
     template: "%s — Академкнига",
   },
-  description: DESCRIPTION,
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    siteName: SITE_NAME,
-    locale: "uk_UA",
-    url: SITE_URL,
-    title: SITE_NAME,
-    description: DESCRIPTION,
-  },
+  description: SITE_DESCRIPTION,
   twitter: { card: "summary_large_image" },
 };
 
@@ -30,7 +18,7 @@ const orgJsonLd = {
   "@context": "https://schema.org",
   "@type": "BookStore",
   name: SITE_NAME,
-  description: DESCRIPTION,
+  description: SITE_DESCRIPTION,
   url: SITE_URL,
   address: {
     "@type": "PostalAddress",
