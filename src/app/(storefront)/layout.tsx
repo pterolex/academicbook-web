@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { AdminToolbar } from "@/components/AdminToolbar";
 import { Header } from "@/components/Header";
 import { TopNav } from "@/components/TopNav";
@@ -29,7 +30,9 @@ export default function StorefrontLayout({
               <section id="content" className="column">
                 <div className="ab-section ab-searchbar">
                   <Breadcrumb />
-                  <SearchBox />
+                  <Suspense fallback={null}>
+                    <SearchBox />
+                  </Suspense>
                 </div>
                 <div className="section">{children}</div>
               </section>

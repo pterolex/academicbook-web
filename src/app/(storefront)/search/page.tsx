@@ -14,24 +14,6 @@ export default async function SearchPage({
 
   return (
     <div className="space-y-4">
-      <form method="get" className="flex gap-2">
-        <input
-          name="q"
-          defaultValue={q}
-          placeholder="Пошук: автор, назва, ISBN, видавництво"
-          className="flex-1 border px-3 py-2 rounded-sm"
-          style={{
-            borderColor: "var(--ab-border)",
-            background: "var(--ab-paper)",
-          }}
-        />
-        <button
-          className="px-4 py-2 rounded-sm text-white"
-          style={{ background: "var(--ab-accent)" }}
-        >
-          Пошук
-        </button>
-      </form>
       {q && (
         <p className="text-sm text-[color:var(--ab-muted)]">
           {data.total} результат(ів) для «{q}»
