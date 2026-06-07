@@ -8,6 +8,7 @@ const NAV: Array<{ href: string; label: string }> = [
   { href: "/admin", label: "Огляд" },
   { href: "/admin/orders", label: "Замовлення" },
   { href: "/admin/books", label: "Книги" },
+  { href: "/admin/categories", label: "Категорії" },
   { href: "/admin/import", label: "Імпорт CSV" },
 ];
 

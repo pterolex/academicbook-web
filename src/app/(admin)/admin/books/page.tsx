@@ -2,7 +2,8 @@
 import { useAdminBooks } from "@/hooks/useAdminBooks";
 
 export default function AdminBooks() {
-  const { q, setQ, rows, search } = useAdminBooks();
+  const { q, setQ, rows, search, page, pageCount, total, goToPage } =
+    useAdminBooks();
 
   return (
     <div className="space-y-3">
@@ -11,7 +12,8 @@ export default function AdminBooks() {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Пошук за назвою або кодом"
+          onKeyDown={(e) => e.key === "Enter" && search()}
+          placeholder="Пошук за назвою, автором або кодом"
           className="border px-3 py-1 flex-1"
           style={{ borderColor: "var(--ab-border)" }}
         />
@@ -43,6 +45,27 @@ export default function AdminBooks() {
           ))}
         </tbody>
       </table>
+      <div className="flex items-center gap-3 text-sm">
+        <button
+          onClick={() => goToPage(page - 1)}
+          disabled={page <= 1}
+          className="border px-3 py-1 disabled:opacity-40"
+          style={{ borderColor: "var(--ab-border)" }}
+        >
+          ← Назад
+        </button>
+        <span>
+          Сторінка {page} з {pageCount} ({total})
+        </span>
+        <button
+          onClick={() => goToPage(page + 1)}
+          disabled={page >= pageCount}
+          className="border px-3 py-1 disabled:opacity-40"
+          style={{ borderColor: "var(--ab-border)" }}
+        >
+          Вперед →
+        </button>
+      </div>
     </div>
   );
 }
