@@ -1,38 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { API_URL } from "@/lib/env";
 import { useAuth } from "@/store/auth";
-
-interface OrderRow {
-  id: string;
-  code: string;
-  createdAt: string;
-  subtotal: string | number;
-  status: string;
-  items: Array<{ titleUa: string; qty: number; price: string }>;
-}
+import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { useMyOrders } from "@/hooks/useMyOrders";
 
 export function AccountClient() {
-  const user = useAuth((s) => s.user);
-  const token = useAuth((s) => s.accessToken);
+  const user = useRequireAuth();
   const clear = useAuth((s) => s.clear);
   const router = useRouter();
-  const [orders, setOrders] = useState<OrderRow[]>([]);
-
-  useEffect(() => {
-    if (!user) {
-      router.replace("/login");
-      return;
-    }
-    fetch(`${API_URL}/me/orders`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then(setOrders)
-      .catch(() => setOrders([]));
-  }, [user, token, router]);
+  const orders = useMyOrders();
 
   if (!user) return null;
 

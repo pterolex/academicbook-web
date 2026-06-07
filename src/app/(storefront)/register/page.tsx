@@ -1,10 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useAuth } from "@/store/auth";
-import { API_URL } from "@/lib/env";
+import { useApi } from "@/hooks/useApi";
+import { FormField } from "@/components/FormField";
 
 const Schema = Yup.object({
   name: Yup.string().max(120),
@@ -20,15 +21,9 @@ interface Values {
   password: string;
 }
 
-const FIELDS: Array<{ key: keyof Values; label: string; type: string }> = [
-  { key: "name", label: "Ім'я", type: "text" },
-  { key: "email", label: "E-mail", type: "email" },
-  { key: "phone", label: "Телефон", type: "text" },
-  { key: "password", label: "Пароль (мін. 8)", type: "password" },
-];
-
 export default function RegisterPage() {
   const setAuth = useAuth((s) => s.set);
+  const api = useApi();
   const router = useRouter();
 
   return (
@@ -38,21 +33,11 @@ export default function RegisterPage() {
       onSubmit={async (values, helpers) => {
         helpers.setStatus(null);
         try {
-          const res = await fetch(`${API_URL}/auth/register`, {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(values),
-          });
-          if (!res.ok) {
-            const b = await res.json().catch(() => ({}));
-            throw new Error(b.message ?? "Помилка реєстрації");
-          }
-          const data = await res.json();
-          setAuth({ accessToken: data.accessToken, user: data.user });
+          const { accessToken, user } = await api.auth.register(values);
+          setAuth({ accessToken, user });
           router.push("/account");
         } catch (e) {
-          helpers.setStatus((e as Error).message);
+          helpers.setStatus((e as Error).message || "Помилка реєстрації");
         }
       }}
     >
@@ -60,18 +45,10 @@ export default function RegisterPage() {
         <Form className="space-y-3 max-w-md">
           <h1 className="text-xl">Реєстрація</h1>
           {status && <div style={{ color: "#c0392b" }}>{status}</div>}
-          {FIELDS.map((f) => (
-            <label key={f.key} className="block">
-              <span className="text-sm">{f.label}</span>
-              <Field
-                type={f.type}
-                name={f.key}
-                className="w-full border px-3 py-2 rounded-sm"
-                style={{ borderColor: "var(--ab-border)", background: "var(--ab-paper)" }}
-              />
-              <ErrorMessage name={f.key} component="div" className="text-xs text-red-600" />
-            </label>
-          ))}
+          <FormField name="name" label="Ім'я" />
+          <FormField name="email" label="E-mail" type="email" required />
+          <FormField name="phone" label="Телефон" />
+          <FormField name="password" label="Пароль (мін. 8)" type="password" required />
           <button
             type="submit"
             disabled={isSubmitting}

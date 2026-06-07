@@ -1,29 +1,14 @@
-import Link from "next/link";
-import { api } from "@/lib/api";
-import { BookCard } from "@/components/BookCard";
+import { categorySlugMatching } from "@/lib/api";
+import { CategoryHighlight } from "@/components/CategoryHighlight";
 
 export const metadata = {
   title: "Фізико-математична література",
 };
 
 export default async function PhysicsMathPage() {
-  let slug: string | undefined;
-  try {
-    const cats = await api.categories();
-    slug = cats.find((c) =>
-      /фіз/i.test(c.nameUa) && /мат/i.test(c.nameUa),
-    )?.slug;
-  } catch {}
-
-  let items: Awaited<ReturnType<typeof api.books>>["items"] = [];
-  try {
-    const data = await api.books({
-      category: slug,
-      sort: "newest",
-      pageSize: "6",
-    });
-    items = data.items;
-  } catch {}
+  const slug = await categorySlugMatching(
+    (name) => /фіз/i.test(name) && /мат/i.test(name),
+  );
 
   return (
     <article className="space-y-4">
@@ -60,23 +45,7 @@ export default async function PhysicsMathPage() {
         міста України.
       </p>
 
-      {items.length > 0 && (
-        <section className="pt-2">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg">Книги розділу</h2>
-            {slug && (
-              <Link href={`/c/${slug}`} className="text-sm">
-                Усі книги →
-              </Link>
-            )}
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {items.map((b) => (
-              <BookCard key={b.id} book={b} />
-            ))}
-          </div>
-        </section>
-      )}
+      <CategoryHighlight slug={slug} />
     </article>
   );
 }

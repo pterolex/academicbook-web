@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { api } from "@/lib/api";
-import { BookCard } from "@/components/BookCard";
+import { BookGrid } from "@/components/BookGrid";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -53,11 +53,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         Знайдено {data.total} книг
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {data.items.map((b) => (
-          <BookCard key={b.id} book={b} />
-        ))}
-      </div>
+      <BookGrid books={data.items} />
 
       {data.pages > 1 && (
         <nav className="flex gap-2 mt-4 text-sm">

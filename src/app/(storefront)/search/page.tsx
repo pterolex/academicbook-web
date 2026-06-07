@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import { BookCard } from "@/components/BookCard";
+import { BookGrid } from "@/components/BookGrid";
 
 export default async function SearchPage({
   searchParams,
@@ -37,11 +37,7 @@ export default async function SearchPage({
           {data.total} результат(ів) для «{q}»
         </p>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {data.items.map((b) => (
-          <BookCard key={b.id} book={b} />
-        ))}
-      </div>
+      <BookGrid books={data.items} />
     </div>
   );
 }

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Formik, Form, Field, ErrorMessage, useField } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { API_URL } from "@/lib/env";
 import { useAuth } from "@/store/auth";
 import { useCart } from "@/store/cart";
+import { useApi } from "@/hooks/useApi";
+import { FormField } from "@/components/FormField";
 
 interface Values {
   name: string;
@@ -41,7 +42,7 @@ export function CheckoutClient() {
   const subtotal = useCart((s) => s.subtotal());
   const clear = useCart((s) => s.clear);
   const user = useAuth((s) => s.user);
-  const token = useAuth((s) => s.accessToken);
+  const api = useApi();
   const router = useRouter();
 
   if (items.length === 0) {
@@ -71,7 +72,7 @@ export function CheckoutClient() {
       onSubmit={async (values, helpers) => {
         helpers.setStatus(null);
         try {
-          const payload = {
+          const order = await api.orders.create({
             name: values.name,
             email: values.email,
             phone: values.phone,
@@ -82,25 +83,11 @@ export function CheckoutClient() {
             createAccountPassword:
               !user && values.createAccount ? values.password : undefined,
             items: items.map((i) => ({ code: i.code, qty: i.qty })),
-          };
-          const res = await fetch(`${API_URL}/orders`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify(payload),
           });
-          if (!res.ok) {
-            const body = await res.json().catch(() => ({}));
-            throw new Error(body.message ?? "Помилка оформлення");
-          }
-          const order = await res.json();
           clear();
           router.push(`/checkout/success?code=${order.code}`);
         } catch (e) {
-          helpers.setStatus((e as Error).message);
+          helpers.setStatus((e as Error).message || "Помилка оформлення");
         }
       }}
     >
@@ -112,13 +99,13 @@ export function CheckoutClient() {
               {status}
             </div>
           )}
-          <TextField name="name" label="Ім'я" required />
-          <TextField name="email" label="E-mail" type="email" required />
-          <TextField name="phone" label="Телефон" required />
-          <TextField name="city" label="Місто" required />
-          <TextField name="street" label="Адреса" required />
-          <TextField name="zip" label="Поштовий індекс" />
-          <TextField name="notes" label="Примітки" textarea />
+          <FormField name="name" label="Ім'я" required />
+          <FormField name="email" label="E-mail" type="email" required />
+          <FormField name="phone" label="Телефон" required />
+          <FormField name="city" label="Місто" required />
+          <FormField name="street" label="Адреса" required />
+          <FormField name="zip" label="Поштовий індекс" />
+          <FormField name="notes" label="Примітки" textarea />
 
           {!user && (
             <div
@@ -130,7 +117,7 @@ export function CheckoutClient() {
                 Створити обліковий запис під час замовлення
               </label>
               {values.createAccount && (
-                <TextField name="password" label="Пароль (мін. 8 символів)" type="password" required />
+                <FormField name="password" label="Пароль (мін. 8 символів)" type="password" required />
               )}
             </div>
           )}
@@ -158,44 +145,5 @@ export function CheckoutClient() {
         </Form>
       )}
     </Formik>
-  );
-}
-
-function TextField({
-  name,
-  label,
-  type = "text",
-  required = false,
-  textarea = false,
-}: {
-  name: string;
-  label: string;
-  type?: string;
-  required?: boolean;
-  textarea?: boolean;
-}) {
-  const [field] = useField(name);
-  return (
-    <label className="block text-sm">
-      <span className="block mb-1">
-        {label} {required && <span style={{ color: "#c0392b" }}>*</span>}
-      </span>
-      {textarea ? (
-        <textarea
-          {...field}
-          rows={3}
-          className="w-full border px-3 py-2 rounded-sm"
-          style={{ borderColor: "var(--ab-border)", background: "var(--ab-paper)" }}
-        />
-      ) : (
-        <input
-          {...field}
-          type={type}
-          className="w-full border px-3 py-2 rounded-sm"
-          style={{ borderColor: "var(--ab-border)", background: "var(--ab-paper)" }}
-        />
-      )}
-      <ErrorMessage name={name} component="div" className="text-xs text-red-600" />
-    </label>
   );
 }

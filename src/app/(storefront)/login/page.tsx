@@ -1,10 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useAuth } from "@/store/auth";
-import { API_URL } from "@/lib/env";
+import { useApi } from "@/hooks/useApi";
+import { FormField } from "@/components/FormField";
 
 const Schema = Yup.object({
   email: Yup.string().email("Невірний e-mail").required("Обов'язково"),
@@ -18,6 +19,7 @@ interface Values {
 
 export default function LoginPage() {
   const setAuth = useAuth((s) => s.set);
+  const api = useApi();
   const router = useRouter();
 
   return (
@@ -27,21 +29,11 @@ export default function LoginPage() {
       onSubmit={async (values, helpers) => {
         helpers.setStatus(null);
         try {
-          const res = await fetch(`${API_URL}/auth/login`, {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(values),
-          });
-          if (!res.ok) {
-            const b = await res.json().catch(() => ({}));
-            throw new Error(b.message ?? "Невірні дані");
-          }
-          const data = await res.json();
-          setAuth({ accessToken: data.accessToken, user: data.user });
+          const { accessToken, user } = await api.auth.login(values);
+          setAuth({ accessToken, user });
           router.push("/account");
         } catch (e) {
-          helpers.setStatus((e as Error).message);
+          helpers.setStatus((e as Error).message || "Невірні дані");
         }
       }}
     >
@@ -49,26 +41,8 @@ export default function LoginPage() {
         <Form className="space-y-3 max-w-md">
           <h1 className="text-xl">Вхід</h1>
           {status && <div style={{ color: "#c0392b" }}>{status}</div>}
-          <label className="block">
-            <span className="text-sm">E-mail</span>
-            <Field
-              type="email"
-              name="email"
-              className="w-full border px-3 py-2 rounded-sm"
-              style={{ borderColor: "var(--ab-border)", background: "var(--ab-paper)" }}
-            />
-            <ErrorMessage name="email" component="div" className="text-xs text-red-600" />
-          </label>
-          <label className="block">
-            <span className="text-sm">Пароль</span>
-            <Field
-              type="password"
-              name="password"
-              className="w-full border px-3 py-2 rounded-sm"
-              style={{ borderColor: "var(--ab-border)", background: "var(--ab-paper)" }}
-            />
-            <ErrorMessage name="password" component="div" className="text-xs text-red-600" />
-          </label>
+          <FormField name="email" label="E-mail" type="email" required />
+          <FormField name="password" label="Пароль" type="password" required />
           <button
             type="submit"
             disabled={isSubmitting}

@@ -90,3 +90,16 @@ export const api = {
       tags: ["books"],
     }),
 };
+
+// Resolve a category slug by matching its Ukrainian name. Used by the themed
+// landing pages (physics-math, history-religion) so the lookup lives once.
+export async function categorySlugMatching(
+  test: (nameUa: string) => boolean,
+): Promise<string | undefined> {
+  try {
+    const cats = await api.categories();
+    return cats.find((c) => test(c.nameUa))?.slug;
+  } catch {
+    return undefined;
+  }
+}

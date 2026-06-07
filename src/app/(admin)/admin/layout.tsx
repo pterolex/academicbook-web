@@ -1,8 +1,8 @@
 "use client";
-import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/store/auth";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 
 const NAV: Array<{ href: string; label: string }> = [
   { href: "/admin", label: "Огляд" },
@@ -16,20 +16,12 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = useAuth((s) => s.user);
+  const user = useRequireAuth({ role: "ADMIN" });
   const clear = useAuth((s) => s.clear);
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (!user) {
-      router.replace("/login");
-    } else if (user.role !== "ADMIN") {
-      router.replace("/");
-    }
-  }, [user, router]);
-
-  if (!user || user.role !== "ADMIN") return null;
+  if (!user) return null;
 
   return (
     <div

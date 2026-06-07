@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { api } from "@/lib/api";
-import { BookCard } from "@/components/BookCard";
+import { BookGrid } from "@/components/BookGrid";
 
 export default async function HomePage() {
   let latest: Awaited<ReturnType<typeof api.books>> = {
@@ -56,11 +56,7 @@ export default async function HomePage() {
             <Link href="/admin/import">/admin/import</Link>.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {latest.items.map((b) => (
-              <BookCard key={b.id} book={b} />
-            ))}
-          </div>
+          <BookGrid books={latest.items} />
         )}
       </section>
     </div>

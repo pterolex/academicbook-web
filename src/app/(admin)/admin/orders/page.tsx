@@ -1,54 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useAuth } from "@/store/auth";
-import { API_URL } from "@/lib/env";
+import { useAdminOrders } from "@/hooks/useAdminOrders";
+import type { OrderStatus } from "@/lib/ApiClient";
 
-const STATUSES = ["NEW", "CONFIRMED", "SHIPPED", "DONE", "CANCELLED"] as const;
-type Status = (typeof STATUSES)[number];
-
-interface Row {
-  id: string;
-  code: string;
-  name: string;
-  email: string;
-  phone: string;
-  subtotal: string;
-  status: Status;
-  createdAt: string;
-  items: Array<{ titleUa: string; qty: number }>;
-}
+const STATUSES: OrderStatus[] = ["NEW", "CONFIRMED", "SHIPPED", "DONE", "CANCELLED"];
 
 export default function AdminOrders() {
-  const token = useAuth((s) => s.accessToken);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [busy, setBusy] = useState<string | null>(null);
-
-  function load() {
-    fetch(`${API_URL}/admin/orders`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then(setRows);
-  }
-
-  useEffect(() => {
-    if (token) load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
-
-  async function update(id: string, status: Status) {
-    setBusy(id);
-    await fetch(`${API_URL}/admin/orders/${id}/status`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status }),
-    });
-    setBusy(null);
-    load();
-  }
+  const { rows, busy, setStatus } = useAdminOrders();
 
   return (
     <div className="space-y-3">
@@ -82,7 +39,7 @@ export default function AdminOrders() {
                 <select
                   value={o.status}
                   disabled={busy === o.id}
-                  onChange={(e) => update(o.id, e.target.value as Status)}
+                  onChange={(e) => setStatus(o.id, e.target.value as OrderStatus)}
                   className="border px-2 py-1"
                   style={{ borderColor: "var(--ab-border)" }}
                 >
