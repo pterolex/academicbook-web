@@ -180,6 +180,18 @@ h2 {
   padding: 9px 4px;
   overflow: hidden;
 }
+.ab-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.ab-search {
+  flex: 1 1 280px;
+  max-width: 480px;
+  min-width: 200px;
+}
 #logo {
   display: inline-block;
 }

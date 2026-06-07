@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SearchBox } from "@/components/SearchBox";
 
 export function Header() {
   return (
     <div id="header" className="ab-header">
-      <div className="ab-section">
+      <div className="ab-section ab-header-row">
         <div id="logo">
           <Link href="/" title="Головна" rel="home">
             <Image
@@ -17,6 +18,7 @@ export function Header() {
             />
           </Link>
         </div>
+        <SearchBox />
       </div>
     </div>
   );
