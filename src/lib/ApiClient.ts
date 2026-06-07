@@ -28,13 +28,15 @@ export interface RegisterInput {
   password: string;
 }
 
+export type DeliveryType = "pickup" | "novaposhta";
+
 export interface OrderInput {
   name: string;
   email: string;
   phone: string;
-  city: string;
-  street: string;
-  zip?: string;
+  deliveryType: DeliveryType;
+  city?: string;
+  warehouse?: string;
   notes?: string;
   createAccountPassword?: string;
   items: Array<{ code: string; qty: number }>;

@@ -9,13 +9,15 @@ import { useCart } from "@/store/cart";
 import { useApi } from "@/hooks/useApi";
 import { FormField } from "@/components/FormField";
 
+type DeliveryType = "pickup" | "novaposhta";
+
 interface Values {
   name: string;
   email: string;
   phone: string;
+  deliveryType: DeliveryType;
   city: string;
-  street: string;
-  zip: string;
+  warehouse: string;
   notes: string;
   createAccount: boolean;
   password: string;
@@ -25,9 +27,19 @@ const Schema = Yup.object({
   name: Yup.string().required("Обов'язково"),
   email: Yup.string().email("Невірний e-mail").required("Обов'язково"),
   phone: Yup.string().required("Обов'язково"),
-  city: Yup.string().required("Обов'язково"),
-  street: Yup.string().required("Обов'язково"),
-  zip: Yup.string(),
+  deliveryType: Yup.string()
+    .oneOf(["pickup", "novaposhta"])
+    .required("Обов'язково"),
+  city: Yup.string().when("deliveryType", {
+    is: "novaposhta",
+    then: (s) => s.required("Обов'язково"),
+    otherwise: (s) => s.notRequired(),
+  }),
+  warehouse: Yup.string().when("deliveryType", {
+    is: "novaposhta",
+    then: (s) => s.required("Обов'язково"),
+    otherwise: (s) => s.notRequired(),
+  }),
   notes: Yup.string().max(500),
   createAccount: Yup.boolean(),
   password: Yup.string().when("createAccount", {
@@ -57,9 +69,9 @@ export function CheckoutClient() {
     name: user?.name ?? "",
     email: user?.email ?? "",
     phone: "",
+    deliveryType: "pickup",
     city: "",
-    street: "",
-    zip: "",
+    warehouse: "",
     notes: "",
     createAccount: false,
     password: "",
@@ -76,9 +88,13 @@ export function CheckoutClient() {
             name: values.name,
             email: values.email,
             phone: values.phone,
-            city: values.city,
-            street: values.street,
-            zip: values.zip || undefined,
+            deliveryType: values.deliveryType,
+            city:
+              values.deliveryType === "novaposhta" ? values.city : undefined,
+            warehouse:
+              values.deliveryType === "novaposhta"
+                ? values.warehouse
+                : undefined,
             notes: values.notes || undefined,
             createAccountPassword:
               !user && values.createAccount ? values.password : undefined,
@@ -102,9 +118,28 @@ export function CheckoutClient() {
           <FormField name="name" label="Ім'я" required />
           <FormField name="email" label="E-mail" type="email" required />
           <FormField name="phone" label="Телефон" required />
-          <FormField name="city" label="Місто" required />
-          <FormField name="street" label="Адреса" required />
-          <FormField name="zip" label="Поштовий індекс" />
+
+          <div className="text-sm space-y-1">
+            <span className="block mb-1">
+              Спосіб доставки <span style={{ color: "#c0392b" }}>*</span>
+            </span>
+            <label className="flex items-center gap-2">
+              <Field type="radio" name="deliveryType" value="pickup" />
+              Самовивоз
+            </label>
+            <label className="flex items-center gap-2">
+              <Field type="radio" name="deliveryType" value="novaposhta" />
+              Нова пошта
+            </label>
+          </div>
+
+          {values.deliveryType === "novaposhta" && (
+            <>
+              <FormField name="city" label="Місто" required />
+              <FormField name="warehouse" label="Відділення" required />
+            </>
+          )}
+
           <FormField name="notes" label="Примітки" textarea />
 
           {!user && (
