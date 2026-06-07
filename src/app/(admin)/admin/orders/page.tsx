@@ -24,9 +24,9 @@ export default function AdminOrders() {
           <tr className="text-left">
             <th className="p-2">№</th>
             <th className="p-2">Клієнт</th>
-            <th className="p-2">Доставка</th>
+            <th className="p-2 hidden md:table-cell">Доставка</th>
             <th className="p-2">Сума</th>
-            <th className="p-2">Дата</th>
+            <th className="p-2 hidden md:table-cell">Дата</th>
             <th className="p-2">Статус</th>
             <th className="p-2"></th>
           </tr>
@@ -44,7 +44,7 @@ export default function AdminOrders() {
                   ))}
                 </ul>
               </td>
-              <td className="p-2 text-xs">
+              <td className="p-2 text-xs hidden md:table-cell">
                 {o.deliveryType === "novaposhta" ? (
                   <div>
                     <div>Нова пошта</div>
@@ -57,7 +57,7 @@ export default function AdminOrders() {
                 )}
               </td>
               <td className="p-2">{Number(o.subtotal).toFixed(2)} ₴</td>
-              <td className="p-2 text-xs">{new Date(o.createdAt).toLocaleString("uk")}</td>
+              <td className="p-2 text-xs hidden md:table-cell">{new Date(o.createdAt).toLocaleString("uk")}</td>
               <td className="p-2">
                 <select
                   value={o.status}

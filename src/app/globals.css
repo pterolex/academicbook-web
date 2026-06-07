@@ -261,12 +261,70 @@ h2 {
   margin: 0 0 0 10px;
 }
 @media (max-width: 900px) {
+  /* Collapse 3-col grid to a single stacked column. Use flex so we can
+     reorder: content + search first, then categories, then cart/auth. */
   .ab-main {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+  }
+  #content {
+    order: 0;
+  }
+  #sidebar-first {
+    order: 1;
+  }
+  #sidebar-second {
+    order: 2;
   }
   .ab-main > #sidebar-first .section,
   .ab-main > #sidebar-second .section {
     margin: 0;
+  }
+}
+
+/* Touch targets + readability on phones */
+@media (max-width: 640px) {
+  body {
+    font-size: 15px;
+  }
+  /* Full-width tappable nav rows instead of a cramped wrapped row */
+  .ab-main-menu {
+    flex-direction: column;
+  }
+  .ab-main-menu li {
+    padding: 0;
+    border-right: none;
+    border-bottom: 1px solid var(--ab-nav-border);
+  }
+  .ab-main-menu li:last-child {
+    border-bottom: none;
+  }
+  .ab-main-menu li a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 1em;
+  }
+  /* Prevent iOS auto-zoom on focus (triggers when input font < 16px) */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Reclaim wasted side margins on small screens */
+@media (max-width: 600px) {
+  #page-wrapper {
+    width: 100%;
+    margin: 6px auto;
+  }
+  .ab-main {
+    padding: 6px;
+  }
+  .sidebar .block {
+    padding: 8px 12px;
   }
 }
 

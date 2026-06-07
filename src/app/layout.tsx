@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { SITE_URL } from "@/lib/env";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   twitter: { card: "summary_large_image" },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 const orgJsonLd = {

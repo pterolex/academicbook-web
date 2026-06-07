@@ -22,12 +22,13 @@ export function CartClient() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl">Кошик</h1>
+      <div className="overflow-x-auto">
       <table className="w-full text-sm border" style={{ borderColor: "var(--ab-border)" }}>
         <thead style={{ background: "var(--ab-bg-alt)" }}>
           <tr className="text-left">
             <th className="p-2">Книга</th>
             <th className="p-2 w-24">Кіл-ть</th>
-            <th className="p-2 w-24 text-right">Ціна</th>
+            <th className="p-2 w-24 text-right hidden sm:table-cell">Ціна</th>
             <th className="p-2 w-24 text-right">Сума</th>
             <th className="p-2 w-8"></th>
           </tr>
@@ -48,7 +49,7 @@ export function CartClient() {
                   style={{ borderColor: "var(--ab-border)" }}
                 />
               </td>
-              <td className="p-2 text-right">{i.price.toFixed(2)} ₴</td>
+              <td className="p-2 text-right hidden sm:table-cell">{i.price.toFixed(2)} ₴</td>
               <td className="p-2 text-right">{(i.price * i.qty).toFixed(2)} ₴</td>
               <td className="p-2 text-right">
                 <button onClick={() => remove(i.code)} aria-label="Видалити">
@@ -60,14 +61,16 @@ export function CartClient() {
         </tbody>
         <tfoot>
           <tr className="border-t font-semibold" style={{ borderColor: "var(--ab-border)" }}>
-            <td className="p-2" colSpan={3}>
+            <td className="p-2" colSpan={2}>
               Разом
             </td>
+            <td className="p-2 hidden sm:table-cell"></td>
             <td className="p-2 text-right">{subtotal.toFixed(2)} ₴</td>
             <td></td>
           </tr>
         </tfoot>
       </table>
+      </div>
       <div className="flex gap-3">
         <Link href="/" className="px-3 py-2 border" style={{ borderColor: "var(--ab-border)" }}>
           Продовжити покупки

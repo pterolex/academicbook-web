@@ -26,8 +26,8 @@ export default function AdminBooks() {
           <tr className="text-left">
             <th className="p-2">Код</th>
             <th className="p-2">Назва</th>
-            <th className="p-2">Автор</th>
-            <th className="p-2">Категорія</th>
+            <th className="p-2 hidden md:table-cell">Автор</th>
+            <th className="p-2 hidden md:table-cell">Категорія</th>
             <th className="p-2">Ціна</th>
             <th className="p-2">Залишок</th>
           </tr>
@@ -37,8 +37,8 @@ export default function AdminBooks() {
             <tr key={b.id} className="border-t" style={{ borderColor: "var(--ab-border)" }}>
               <td className="p-2 font-mono text-xs">{b.code}</td>
               <td className="p-2">{b.titleUa}</td>
-              <td className="p-2">{b.author}</td>
-              <td className="p-2">{b.category?.nameUa}</td>
+              <td className="p-2 hidden md:table-cell">{b.author}</td>
+              <td className="p-2 hidden md:table-cell">{b.category?.nameUa}</td>
               <td className="p-2">{b.price} ₴</td>
               <td className="p-2">{b.stock}</td>
             </tr>

@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
@@ -17,6 +18,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const logout = useLogout();
   const router = useRouter();
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
   if (!user) return null;
 
@@ -30,8 +32,18 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         color: "#0f172a",
       }}
     >
+      {/* Backdrop — only when drawer open on mobile */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/40 z-30 md:hidden"
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+        />
+      )}
       <aside
-        className="w-60 flex-shrink-0 flex flex-col"
+        className={`w-60 flex-shrink-0 flex flex-col fixed inset-y-0 left-0 z-40 transform transition-transform md:static md:translate-x-0 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
         style={{ background: "#0f172a", color: "#e2e8f0" }}
       >
         <div className="px-4 py-4 border-b border-slate-700">
@@ -50,6 +62,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={it.href}
                 href={it.href}
+                onClick={() => setOpen(false)}
                 className="block px-4 py-2 hover:bg-slate-800"
                 style={{
                   background: active ? "#1e293b" : "transparent",
@@ -83,7 +96,24 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </button>
         </div>
       </aside>
-      <main className="flex-1 p-6 overflow-x-auto">{children}</main>
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Mobile top bar with hamburger — hidden on desktop */}
+        <div
+          className="md:hidden flex items-center gap-3 px-4 border-b border-slate-700"
+          style={{ background: "#0f172a", color: "#e2e8f0" }}
+        >
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            aria-label="Меню"
+            className="min-h-[44px] px-2 text-2xl leading-none text-white"
+          >
+            ☰
+          </button>
+          <span className="text-base font-semibold text-white">Академкнига</span>
+        </div>
+        <main className="flex-1 p-4 md:p-6 overflow-x-auto">{children}</main>
+      </div>
     </div>
   );
 }
