@@ -21,15 +21,14 @@ export default function StorefrontLayout({
         <div id="page">
           <Header />
           <TopNav />
-          <div className="ab-section ab-searchbar">
-            <Breadcrumb />
-            <SearchBox />
-          </div>
-          <div className="ab-spacer" />
           <div id="main-wrapper">
             <div id="main" className="ab-main">
               <SidebarFirst />
               <section id="content" className="column">
+                <div className="ab-section ab-searchbar">
+                  <Breadcrumb />
+                  <SearchBox />
+                </div>
                 <div className="section">{children}</div>
               </section>
               <SidebarSecond />
