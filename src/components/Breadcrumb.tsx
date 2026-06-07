@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useBreadcrumb } from "@/store/breadcrumb";
 
-// Static labels for known route segments. Dynamic segments (book code,
-// category slug) fall back to the decoded segment text.
 const LABELS: Record<string, string> = {
   about: "Про магазин Академкнига",
   contacts: "Контакти",
@@ -21,22 +20,30 @@ const LABELS: Record<string, string> = {
   search: "Пошук",
 };
 
+// Segments that have no real page — render as text, not link.
+const NO_LINK = new Set(["book", "c"]);
+
 function label(segment: string): string {
   return LABELS[segment] ?? decodeURIComponent(segment);
 }
 
 export function Breadcrumb() {
   const pathname = usePathname();
+  const overrideTitle = useBreadcrumb((s) => s.title);
   const segments = pathname.split("/").filter(Boolean);
 
-  // Home page: no trail.
   if (segments.length === 0) return null;
 
   const crumbs = segments.map((seg, i) => ({
     label: label(seg),
     href: "/" + segments.slice(0, i + 1).join("/"),
     last: i === segments.length - 1,
+    noLink: NO_LINK.has(seg),
   }));
+
+  if (overrideTitle) {
+    crumbs[crumbs.length - 1].label = overrideTitle;
+  }
 
   return (
     <nav aria-label="Хлібні крихти" className="ab-breadcrumb">
@@ -44,8 +51,8 @@ export function Breadcrumb() {
       {crumbs.map((c) => (
         <span key={c.href}>
           <span className="ab-breadcrumb-sep"> » </span>
-          {c.last ? (
-            <span aria-current="page">{c.label}</span>
+          {c.last || c.noLink ? (
+            <span aria-current={c.last ? "page" : undefined}>{c.label}</span>
           ) : (
             <Link href={c.href}>{c.label}</Link>
           )}

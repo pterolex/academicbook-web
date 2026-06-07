@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { api, type Book } from "@/lib/api";
 import { SITE_URL } from "@/lib/env";
 import { AddToCartButton } from "@/components/AddToCartButton";
+import { BreadcrumbTitleSetter } from "@/components/BreadcrumbTitleSetter";
 
 async function getBook(code: string): Promise<Book | null> {
   try {
@@ -105,6 +105,7 @@ export default async function BookPage({
 
   return (
     <article className="space-y-3">
+      <BreadcrumbTitleSetter title={book.titleUa} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -113,15 +114,6 @@ export default async function BookPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
-      <div className="text-sm">
-        <Link href="/">Головна</Link>
-        {book.category && (
-          <>
-            {" / "}
-            <Link href={`/c/${book.category.slug}`}>{book.category.nameUa}</Link>
-          </>
-        )}
-      </div>
       <h1 className="text-2xl">{book.titleUa}</h1>
       {book.titleRu && book.titleRu !== book.titleUa && (
         <div className="text-[color:var(--ab-muted)]">{book.titleRu}</div>
