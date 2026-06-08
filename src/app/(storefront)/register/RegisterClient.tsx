@@ -10,6 +10,8 @@ import { FormField } from "@/components/FormField";
 
 const Schema = Yup.object({
   name: Yup.string().max(120),
+  surname: Yup.string().max(120),
+  fatherName: Yup.string().max(120),
   email: Yup.string().email("Невірний e-mail").required("Обов'язково"),
   phone: Yup.string().max(40),
   password: Yup.string().min(8, "Мін. 8 символів").required("Обов'язково"),
@@ -17,6 +19,8 @@ const Schema = Yup.object({
 
 interface Values {
   name: string;
+  surname: string;
+  fatherName: string;
   email: string;
   phone: string;
   password: string;
@@ -30,7 +34,7 @@ export function RegisterClient() {
 
   return (
     <Formik<Values>
-      initialValues={{ name: "", email: "", phone: "", password: "" }}
+      initialValues={{ name: "", surname: "", fatherName: "", email: "", phone: "", password: "" }}
       validationSchema={Schema}
       onSubmit={async (values, helpers) => {
         helpers.setStatus(null);
@@ -53,7 +57,9 @@ export function RegisterClient() {
         <Form className="space-y-3 max-w-md">
           <h1 className="text-xl">Реєстрація</h1>
           {status && <div style={{ color: "#c0392b" }}>{status}</div>}
+          <FormField name="surname" label="Прізвище" />
           <FormField name="name" label="Ім'я" />
+          <FormField name="fatherName" label="По батькові" />
           <FormField name="email" label="E-mail" type="email" required />
           <FormField name="phone" label="Телефон" />
           <FormField name="password" label="Пароль (мін. 8)" type="password" required />

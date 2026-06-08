@@ -14,6 +14,8 @@ type DeliveryType = "pickup" | "novaposhta";
 
 interface Values {
   name: string;
+  surname: string;
+  fatherName: string;
   email: string;
   phone: string;
   deliveryType: DeliveryType;
@@ -26,6 +28,8 @@ interface Values {
 
 const Schema = Yup.object({
   name: Yup.string().required("Обов'язково"),
+  surname: Yup.string().required("Обов'язково"),
+  fatherName: Yup.string().max(120),
   email: Yup.string().email("Невірний e-mail").required("Обов'язково"),
   phone: Yup.string().required("Обов'язково"),
   deliveryType: Yup.string()
@@ -69,6 +73,8 @@ export function CheckoutClient() {
 
   const initial: Values = {
     name: user?.name ?? "",
+    surname: user?.surname ?? "",
+    fatherName: user?.fatherName ?? "",
     email: user?.email ?? "",
     phone: "",
     deliveryType: "pickup",
@@ -91,6 +97,8 @@ export function CheckoutClient() {
             : "";
           const order = await api.orders.create({
             name: values.name,
+            surname: values.surname,
+            fatherName: values.fatherName || undefined,
             email: values.email,
             phone: values.phone,
             deliveryType: values.deliveryType,
@@ -121,7 +129,9 @@ export function CheckoutClient() {
               {status}
             </div>
           )}
+          <FormField name="surname" label="Прізвище" required />
           <FormField name="name" label="Ім'я" required />
+          <FormField name="fatherName" label="По батькові" />
           <FormField name="email" label="E-mail" type="email" required />
           <FormField name="phone" label="Телефон" required />
 

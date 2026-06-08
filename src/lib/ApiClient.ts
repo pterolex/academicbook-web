@@ -24,6 +24,8 @@ export interface LoginInput {
 
 export interface RegisterInput {
   name: string;
+  surname: string;
+  fatherName?: string;
   email: string;
   phone: string;
   password: string;
@@ -34,6 +36,8 @@ export type DeliveryType = "pickup" | "novaposhta";
 
 export interface OrderInput {
   name: string;
+  surname: string;
+  fatherName?: string;
   email: string;
   phone: string;
   deliveryType: DeliveryType;

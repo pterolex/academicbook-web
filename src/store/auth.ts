@@ -6,6 +6,8 @@ export interface SessionUser {
   id: string;
   email: string;
   name: string | null;
+  surname: string | null;
+  fatherName: string | null;
   role: "CUSTOMER" | "ADMIN";
 }
 
