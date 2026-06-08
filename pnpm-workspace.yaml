@@ -2,3 +2,5 @@ allowBuilds:
   '@sentry/cli': true
   sharp: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - ultracite@7.8.2
