@@ -585,3 +585,131 @@ h2 {
 .ab-toolbar-shortcuts a:hover {
   text-decoration: underline;
 }
+
+/* ============ Drupal-7 admin overlay ============ */
+/* Dimmed full-screen scrim behind the iframe panel. */
+.ab-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 24px;
+}
+.ab-overlay-scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.6);
+  animation: ab-overlay-fade 0.15s ease-out;
+}
+@keyframes ab-overlay-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.ab-overlay-panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 6px 6px 0 0;
+  box-shadow: 0 6px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: ab-overlay-slide 0.2s ease-out;
+}
+@keyframes ab-overlay-slide {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.ab-overlay-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, #0079c1 0%, #00598e 100%);
+  color: #fff;
+  padding: 8px 14px;
+  font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial,
+    sans-serif;
+}
+.ab-overlay-title {
+  font-size: 14px;
+  font-weight: bold;
+}
+.ab-overlay-close {
+  background: none;
+  border: 0;
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+  opacity: 0.85;
+}
+.ab-overlay-close:hover {
+  opacity: 1;
+}
+.ab-overlay-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  background: #e0e0d8;
+  background: linear-gradient(to bottom, #f0f0e8 0%, #dcdcd4 100%);
+  border-bottom: 1px solid #aaa;
+  padding: 6px 10px 0;
+}
+.ab-overlay-tabs a {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #0074bd;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+}
+.ab-overlay-tabs a:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+.ab-overlay-tabs a.ab-overlay-tab-active {
+  background: #f1f5f9;
+  border-color: #aaa;
+  color: #0f172a;
+  font-weight: bold;
+}
+.ab-overlay-body {
+  flex: 1;
+  overflow: auto;
+  padding: 18px 20px;
+  background: #f1f5f9;
+  color: #0f172a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
+.ab-overlay-loading {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+}
+@media (max-width: 768px) {
+  .ab-overlay-backdrop {
+    padding: 0;
+  }
+  .ab-overlay-panel {
+    border-radius: 0;
+  }
+}

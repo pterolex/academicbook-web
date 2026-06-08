@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { AdminOverlay } from "@/components/AdminOverlay";
 import { AdminToolbar } from "@/components/AdminToolbar";
 import { Header } from "@/components/Header";
 import { TopNav } from "@/components/TopNav";
@@ -22,6 +23,7 @@ export default function StorefrontLayout({
     <RecaptchaProvider>
     <div className="two-sidebars ab-root">
       <AdminToolbar />
+      <AdminOverlay />
       <div id="page-wrapper">
         <div id="page">
           <Header />

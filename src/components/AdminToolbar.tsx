@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/store/auth";
+import { useRouter } from "next/navigation";
+import type { MouseEvent } from "react";
 import { useLogout } from "@/hooks/useLogout";
+import { useAdminOverlay } from "@/store/admin-overlay";
+import { useAuth } from "@/store/auth";
 
 const MENU: Array<{ href: string; label: string }> = [
   { href: "/admin", label: "Панель" },
@@ -21,41 +23,61 @@ export function AdminToolbar() {
   const user = useAuth((s) => s.user);
   const logout = useLogout();
   const router = useRouter();
-  const pathname = usePathname();
+  const overlayPath = useAdminOverlay((s) => s.path);
 
-  if (!user || user.role !== "ADMIN") return null;
+  if (user?.role !== "ADMIN") {
+    return null;
+  }
+
+  // Open in the Drupal-style overlay on a plain left click; let modified clicks
+  // (new tab / window) and middle clicks fall through to the real href.
+  const openOverlay = (href: string) => (e: MouseEvent<HTMLAnchorElement>) => {
+    if (
+      e.defaultPrevented ||
+      e.button !== 0 ||
+      e.metaKey ||
+      e.ctrlKey ||
+      e.shiftKey ||
+      e.altKey
+    ) {
+      return;
+    }
+    e.preventDefault();
+    // Pushes a history entry so the browser Back button closes the overlay.
+    window.location.hash = `overlay=${href}`;
+  };
+
+  const isActive = (href: string) =>
+    href === "/admin"
+      ? overlayPath === "/admin"
+      : Boolean(overlayPath?.startsWith(href));
 
   return (
-    <div id="admin-toolbar" className="ab-toolbar">
+    <div className="ab-toolbar" id="admin-toolbar">
       <div className="ab-toolbar-bar">
         <ul className="ab-toolbar-menu">
-          {MENU.map((it) => {
-            const active =
-              it.href === "/admin"
-                ? pathname === "/admin"
-                : pathname.startsWith(it.href);
-            return (
-              <li key={it.href}>
-                <Link
-                  href={it.href}
-                  className={active ? "ab-toolbar-active" : undefined}
-                >
-                  {it.label}
-                </Link>
-              </li>
-            );
-          })}
+          {MENU.map((it) => (
+            <li key={it.href}>
+              <Link
+                className={isActive(it.href) ? "ab-toolbar-active" : undefined}
+                href={it.href}
+                onClick={openOverlay(it.href)}
+              >
+                {it.label}
+              </Link>
+            </li>
+          ))}
         </ul>
         <div className="ab-toolbar-user">
           <span className="ab-toolbar-hello">
             Вітаємо, {user.name ?? user.email}
           </span>
           <button
-            type="button"
             onClick={async () => {
               await logout();
               router.push("/");
             }}
+            type="button"
           >
             Вийти
           </button>
@@ -63,7 +85,7 @@ export function AdminToolbar() {
       </div>
       <div className="ab-toolbar-shortcuts">
         {SHORTCUTS.map((it) => (
-          <Link key={it.label} href={it.href}>
+          <Link href={it.href} key={it.label} onClick={openOverlay(it.href)}>
             {it.label}
           </Link>
         ))}
